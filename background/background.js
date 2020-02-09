@@ -30,12 +30,6 @@ async function loadBoards(noCache = false) {
   }
 }
 
-async function refreshAllBoards() {
-  // eslint-disable-next-line no-use-before-define
-  await loadAndCreateMenus(true, false);
-  notifier.success({ message: `Boards refreshed: ${boards.length} boards!` });
-}
-
 async function loadLists(board, noCache = false) {
   console.log('Loading "%s" lists...', board.name);
 
@@ -51,6 +45,28 @@ async function loadLists(board, noCache = false) {
     notifier.error({ type: `Load "${board.name}" lists error!`, message: error.message });
     return null;
   }
+}
+
+async function refreshAllBoards() {
+  const boards = await loadBoards(true);
+  if (!boards) {
+    return;
+  }
+
+  await menus.removeAll();
+
+  menus.createBoards(boards);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const board of boards) {
+    // eslint-disable-next-line no-await-in-loop
+    const lists = await loadLists(board, true);
+    if (lists) {
+      menus.createBoardLists(board, lists);
+    }
+  }
+
+  notifier.success({ message: `Boards refreshed: ${boards.length} boards!` });
 }
 
 async function refreshBoardLists(board) {
@@ -100,18 +116,20 @@ async function onClickList(info, tab, board, list) {
   }
 }
 
-async function loadAndCreateMenus(noCache = false, storeCredentials = false) {
+async function loadAndCreateMenus({ noCache = false, storeCredentials = false }) {
   const boards = await loadBoards(noCache);
   if (!boards) {
     return;
   }
 
-  notifier.success({ message: `${boards.length} boards loaded!` });
-
   if (storeCredentials) {
+    notifier.success({ message: `${boards.length} boards loaded!` });
+
     await storage.set('credentials', apiCredentials, 'credentials data')
       .catch(() => {}); // fire & forget;
+
     console.log('Credentials stored!');
+
     notifier.success({ message: 'Credentials successfully saved!' });
   }
 
@@ -119,12 +137,10 @@ async function loadAndCreateMenus(noCache = false, storeCredentials = false) {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const board of boards) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const lists = await loadLists(board);
+    // eslint-disable-next-line no-await-in-loop
+    const lists = await loadLists(board, noCache);
+    if (lists) {
       menus.createBoardLists(board, lists);
-    } catch (error) {
-      notifier.error({ type: `Load "${board.name}" lists error!`, message: error.message });
     }
   }
 }
@@ -138,7 +154,7 @@ async function onStart() {
     console.log('Credentials retrieved from storage.');
 
     apiCredentials = credentials;
-    await loadAndCreateMenus(false);
+    await loadAndCreateMenus({ noCache: false });
   } else {
     console.log('No credentials found.');
   }
@@ -147,7 +163,7 @@ async function onStart() {
     console.log('Received credentials from popup.');
 
     apiCredentials = message.credentials;
-    await loadAndCreateMenus(false, true);
+    await loadAndCreateMenus({ noCache: false, storeCredentials: true });
   });
 }
 

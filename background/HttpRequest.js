@@ -29,7 +29,6 @@ class HttpRequest {
       this.storage.get(url)
         .then((data) => {
           if (data) {
-            console.log('Data available in storage, no fetch needed!');
             resolve(data);
             return;
           }
