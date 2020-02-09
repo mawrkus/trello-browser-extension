@@ -26,12 +26,13 @@ async function loadBoards(noCache = false) {
   } catch (error) {
     console.log('No boards loaded.');
     notifier.error({ type: 'Load boards error!', message: error.message });
-    return [];
+    return null;
   }
 }
 
 async function refreshAllBoards() {
-  const boards = await loadAndCreateMenus(true);
+  // eslint-disable-next-line no-use-before-define
+  await loadAndCreateMenus(true, false);
   notifier.success({ message: `Boards refreshed: ${boards.length} boards!` });
 }
 
@@ -48,12 +49,15 @@ async function loadLists(board, noCache = false) {
   } catch (error) {
     console.log('No lists loaded.');
     notifier.error({ type: `Load "${board.name}" lists error!`, message: error.message });
-    return [];
+    return null;
   }
 }
 
 async function refreshBoardLists(board) {
   const lists = await loadLists(board, true);
+  if (!lists) {
+    return;
+  }
 
   await menus.remove(`board-${board.id}`);
   menus.createBoard(board);
@@ -96,8 +100,20 @@ async function onClickList(info, tab, board, list) {
   }
 }
 
-async function loadAndCreateMenus(noCache = false) {
+async function loadAndCreateMenus(noCache = false, storeCredentials = false) {
   const boards = await loadBoards(noCache);
+  if (!boards) {
+    return;
+  }
+
+  notifier.success({ message: `${boards.length} boards loaded!` });
+
+  if (storeCredentials) {
+    await storage.set('credentials', apiCredentials, 'credentials data')
+      .catch(() => {}); // fire & forget;
+    console.log('Credentials stored!');
+    notifier.success({ message: 'Credentials successfully saved!' });
+  }
 
   menus.createBoards(boards);
 
@@ -111,8 +127,6 @@ async function loadAndCreateMenus(noCache = false) {
       notifier.error({ type: `Load "${board.name}" lists error!`, message: error.message });
     }
   }
-
-  return boards;
 }
 
 async function onStart() {
@@ -120,11 +134,11 @@ async function onStart() {
 
   const credentials = await storage.get('credentials', 'credentials data');
 
-  if (!credentials) {
+  if (credentials) {
     console.log('Credentials retrieved from storage.');
 
     apiCredentials = credentials;
-    await loadAndCreateMenus();
+    await loadAndCreateMenus(false);
   } else {
     console.log('No credentials found.');
   }
@@ -133,11 +147,7 @@ async function onStart() {
     console.log('Received credentials from popup.');
 
     apiCredentials = message.credentials;
-    await loadAndCreateMenus();
-
-    await storage.set('credentials', apiCredentials, 'credentials data');
-    console.log('Credentials stored!');
-    notifier.success({ message: 'Credentials successfully saved!' });
+    await loadAndCreateMenus(false, true);
   });
 }
 

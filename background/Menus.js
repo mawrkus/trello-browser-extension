@@ -27,7 +27,7 @@ class Menus {
       id: 'board-refresh-all',
       title: '📥 Refresh all boards',
       contexts: ['all'],
-      onclick: this.onClickRefreshAllBoards,
+      onclick: () => this.onClickRefreshAllBoards(),
     });
 
     this.menus.create({

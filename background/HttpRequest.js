@@ -31,11 +31,11 @@ class HttpRequest {
           if (data) {
             console.log('Data available in storage, no fetch needed!');
             resolve(data);
+            return;
           }
+          throw new Error('No data available in storage!');
         })
-        .catch(() => {});
-
-      return this.fetch(url).then(resolve).catch(reject);
+        .catch(() => this.fetch(url).then(resolve).catch(reject));
     });
   }
 
