@@ -6,26 +6,29 @@
 
 As the extension is not published in Chrome Web store, the installation is a bit more tedious...
 
-- In a terminal:
-
+In a terminal:
   ```shell
   git clone https://github.com/mawrkus/brave-chrome-trello-extension.git
   ```
 
-- In Brave/Chrome, go to this "url": [chrome://extensions](chrome://extensions)
+In Brave/Chrome:
+
+- Go to this "url": [chrome://extensions](chrome://extensions)
 - Click on "Load unpacked"
-- Go to the folder where you've cloned the extension and click "Select"
-- All good! You should see the extension icon in Brave's toolbar
+- Go to the folder where you've cloned the extension and click "Select", the extension is installed:
+<img src="docs/extension-details.png" alt="Extension details" />
 
+- And the the extension icon appears in the browser's toolbar
+<img src="docs/toolbar-with-extension.png" alt="Extension icon in toolbar" />
 
-Detailed info: https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/
+More info: https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/
 
 ## Usage
 
 First you'll need an API key and token.
 In order to obtain them, <a href="https://trello.com/login" target="_blank">login to Trello</a> then visit <a href="https://trello.com/app-key/" target="_blank">https://trello.com/app-key/</a>
 
-Click on the extension icon in Brave's toolbar to enter them:
+Click on the extension icon in the browser's toolbar to enter them:
 <img src="docs/extension-popup.png" alt="TrelloMe! popup" />
 
 Once saved, you should be notified that your boards were loaded properly:
