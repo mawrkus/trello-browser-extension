@@ -8,7 +8,7 @@ class Storage {
 
   set(key, data, meta = 'data') {
     return new Promise((resolve, reject) => {
-      this.storage.set({ [key]: { data } }, () => {
+      this.storage.set({ [key]: data }, () => {
         if (!chrome.runtime.lastError) {
           resolve();
           return;
@@ -28,8 +28,9 @@ class Storage {
 
   get(key, meta = 'data') {
     return new Promise((resolve, reject) => {
-      this.storage.get(key, ({ data }) => {
+      this.storage.get(key, (dataObject) => {
         if (!chrome.runtime.lastError) {
+          const data = dataObject[key];
           resolve(data);
           return;
         }
