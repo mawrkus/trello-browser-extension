@@ -1,0 +1,15 @@
+{
+  "extends": ["airbnb-base"],
+  "rules": {
+    "no-console": "off"
+  },
+  "globals": {
+    "browser": "readonly",
+    "chrome": "readonly",
+    "fetch": "readonly",
+    "HttpRequest": "readonly",
+    "Menus": "readonly",
+    "Notifier": "readonly",
+    "Storage": "readonly"
+  }
+}
