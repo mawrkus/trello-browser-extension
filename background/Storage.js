@@ -30,7 +30,7 @@ class Storage {
     return new Promise((resolve, reject) => {
       this.storage.get(key, (dataObject) => {
         if (!chrome.runtime.lastError) {
-          const data = dataObject[key];
+          const data = dataObject[key]; // storage always returns an object, even if not found
           resolve(data);
           return;
         }

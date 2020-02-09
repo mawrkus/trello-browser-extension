@@ -13,6 +13,8 @@ class Notifier {
       title: 'TrelloMe!',
       message,
     });
+
+    console.log(message);
   }
 
   error({ type, message }) {
@@ -23,5 +25,7 @@ class Notifier {
       title: `TrelloMe! ${type}`,
       message,
     });
+
+    console.error(type, message);
   }
 }

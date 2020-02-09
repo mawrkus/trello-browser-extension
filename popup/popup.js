@@ -29,7 +29,7 @@ async function onClickSave(event) {
     return;
   }
 
-  console.log('Storage & sending credentials...');
+  console.log('Storing & sending credentials to background script...');
 
   await storage.set('credentials', credentials, 'credentials data');
   console.log('Credentials stored!');
