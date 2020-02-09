@@ -1,0 +1,41 @@
+.title {
+  text-align: center;
+  font-size: 21px;
+  letter-spacing: 0.4px;
+  padding: 20px 0;
+  border-bottom: 1px solid #ccc;
+  color: #fff;
+  background-color: #0079bf;
+}
+
+.form, .help-msg {
+  margin: 10px 0;
+  padding: 0 20px;
+}
+
+.label, .input, .button {
+  font-size: 14px;
+}
+
+.field.error .input {
+  border-color: #ff3300;
+}
+
+.button {
+  color: #fff !important;
+  background-color: #0079bf;
+  border-color: transparent;
+  margin: 5px 0 10px 0;
+}
+
+.button:hover {
+  border-color: transparent;
+  opacity: 0.9;
+}
+
+.help-msg {
+  text-align: center;
+  font-size: 12px;
+  color: #344563;
+  margin-bottom: 25px;
+}
