@@ -14,14 +14,13 @@ In a terminal:
 In Brave/Chrome:
 
 - Go to this "url": [chrome://extensions](chrome://extensions)
-- Click on "Load unpacked"
+- Activate the "Developer mode" and click on "Load unpacked":
+<img src="docs/settings-developer-mode.png" alt="Extension settings" />
 - Go to the folder where you've cloned the extension and click "Select". The extension is now installed...
 <img src="docs/extension-details.png" alt="Extension details" />
 
 - ...and the extension icon appears in the browser's toolbar
 <img src="docs/toolbar-with-extension.png" alt="Extension icon in toolbar" />
-
-More info: https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/
 
 ## Usage
 
