@@ -20,8 +20,8 @@ class Notifier {
       }
     });
 
-    this.notifications.onClosed.addListener((notificationId) => {
-      console.log('Notification with ID="%s" closed', notificationId, this.idsToUrlsMap);
+    this.notifications.onClosed.addListener((notificationId, byUser) => {
+      console.log('Notification with ID="%s" closed', notificationId, byUser, this.idsToUrlsMap);
       delete this.idsToUrlsMap[notificationId];
     });
   }
@@ -29,7 +29,6 @@ class Notifier {
   success({ message, clickUrl }) {
     console.log(message, clickUrl);
 
-    // unique ID required by Chrome
     const options = {
       type: 'basic',
       iconUrl: './icons/trello-logo-96.png',
@@ -37,6 +36,7 @@ class Notifier {
       message,
     };
 
+    // unique ID required by Chrome
     this.notifications.create(`success-${Date.now()}`, options, (notificationId) => {
       if (clickUrl) {
         this.idsToUrlsMap[notificationId] = { url: clickUrl };
