@@ -15,10 +15,10 @@ In Brave/Chrome:
 
 - Go to this "url": [chrome://extensions](chrome://extensions)
 - Click on "Load unpacked"
-- Go to the folder where you've cloned the extension and click "Select", the extension is installed:
+- Go to the folder where you've cloned the extension and click "Select". The extension is now installed...
 <img src="docs/extension-details.png" alt="Extension details" />
 
-- And the the extension icon appears in the browser's toolbar
+- ...and the extension icon appears in the browser's toolbar
 <img src="docs/toolbar-with-extension.png" alt="Extension icon in toolbar" />
 
 More info: https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/
