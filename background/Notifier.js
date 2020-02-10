@@ -12,11 +12,17 @@ class Notifier {
 
   bindEvents() {
     this.notifications.onClicked.addListener((notificationId) => {
-      console.log('Clicked on notification', this.idsToUrlsMap[notificationId]);
+      console.log('Clicked on notification ID="%s"', notificationId, this.idsToUrlsMap);
 
       if (this.idsToUrlsMap[notificationId]) {
         this.tabs.create({ url: this.idsToUrlsMap[notificationId].url });
+        delete this.idsToUrlsMap[notificationId];
       }
+    });
+
+    this.notifications.onClosed.addListener((notificationId) => {
+      console.log('Notification with ID="%s" closed', notificationId, this.idsToUrlsMap);
+      delete this.idsToUrlsMap[notificationId];
     });
   }
 
