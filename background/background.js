@@ -99,7 +99,6 @@ async function onClickList(info, tab, board, list) {
     idList: list.id,
     urlSource: pageUrl,
     name: selectionText || pageTitle,
-    desc: 'Created via TrelloMe!',
     pos: 'top',
   };
 
