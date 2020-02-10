@@ -13,9 +13,10 @@ In a terminal:
 
 In Brave/Chrome:
 
-- Go to this "url": [chrome://extensions](chrome://extensions)
+- Go to this "url": chrome://extensions (or brave://extensions)
 - Activate the "Developer mode" and click on "Load unpacked":
 <img src="docs/settings-developer-mode.png" alt="Extension settings" />
+
 - Go to the folder where you've cloned the extension and click "Select". The extension is now installed...
 <img src="docs/extension-details.png" alt="Extension details" />
 
