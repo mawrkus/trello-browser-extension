@@ -103,8 +103,12 @@ async function onClickList(info, tab, board, list) {
   };
 
   try {
-    await createCard(newCard);
-    notifier.success({ message: `New card successfully added to ${board.name} > ${list.name}!` });
+    const response = await createCard(newCard);
+
+    notifier.success({
+      message: `New card successfully added to ${board.name} > ${list.name}!`,
+      clickUrl: response.url,
+    });
   } catch (error) {
     notifier.error({
       type: 'Create card error!',
@@ -127,6 +131,8 @@ async function loadAndCreateMenus({ noCache = false, storeCredentials = false })
 
     notifier.success({ message: 'Credentials successfully saved!' });
   }
+
+  await menus.removeAll(); // e.g. sending new credentials
 
   menus.createBoards(boards);
 

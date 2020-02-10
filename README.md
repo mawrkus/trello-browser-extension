@@ -7,9 +7,10 @@
 As the extension is not published in Chrome Web store, the installation is a bit more tedious...
 
 In a terminal:
-  ```shell
-  git clone https://github.com/mawrkus/brave-chrome-trello-extension.git
-  ```
+
+```shell
+git clone https://github.com/mawrkus/brave-chrome-trello-extension.git
+```
 
 In Brave/Chrome:
 
