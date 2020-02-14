@@ -105,6 +105,8 @@ async function onClickList(info, tab, board, list) {
   try {
     const response = await createCard(newCard);
 
+    console.log('Card created!', response);
+
     notifier.success({
       message: `New card successfully added to ${board.name} > ${list.name}!`,
       clickUrl: response.url,
