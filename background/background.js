@@ -4,6 +4,7 @@ const apiBaseUrl = 'https://api.trello.com';
 let apiCredentials;
 
 const notifier = new Notifier();
+const scripting = new Scripting();
 const storage = new Storage({ notifier });
 const httpRequest = new HttpRequest({ storage });
 
@@ -80,32 +81,71 @@ async function refreshBoardLists(board) {
   notifier.success({ message: `"${board.name}" refreshed: ${lists.length} lists!` });
 }
 
-function createCard(card) {
-  console.log('Creating new card...', card);
+async function createCover(newCard, coverData) {
+  const { key, token } = apiCredentials;
+
+  console.log('Creating cover for new card id="%s"...', newCard.id, coverData);
+
+  const qs = Object.entries(coverData)
+    .reduce((acc, [k, v]) => `${acc}&${k}=${encodeURIComponent(v)}`, '');
+
+  const url = `${apiBaseUrl}/1/cards/${newCard.id}/attachments?key=${key}&token=${token}${qs}`;
+
+  const newCover = await httpRequest.post(url);
+
+  console.log('Cover created!', newCover);
+
+  return newCover;
+}
+
+async function createCard(cardData, coverData) {
+  console.log('Creating new card...', cardData, coverData);
 
   const { key, token } = apiCredentials;
-  const qs = Object.entries(card)
+
+  const qs = Object.entries(cardData)
     .reduce((acc, [k, v]) => `${acc}&${k}=${encodeURIComponent(v)}`, '');
+
   const url = `${apiBaseUrl}/1/cards?key=${key}&token=${token}${qs}`;
 
-  return httpRequest.post(url);
+  const newCard = await httpRequest.post(url);
+
+  console.log('Card created!', newCard);
+
+  if (coverData) {
+    createCover(newCard, coverData).catch(console.error);
+  }
+
+  return newCard;
 }
 
 async function onClickList(info, tab, board, list) {
   const { selectionText } = info;
-  const { url: pageUrl, title: pageTitle } = tab;
+  const { id: tabId, url: pageUrl, title: pageTitle } = tab;
 
-  const newCard = {
+  const [htmlMetas] = await scripting.executeScript(tabId, {
+    file: '/content/getHtmlMetas.js',
+    runAt: 'document_end', // as soon as the DOM has finished loading
+  });
+
+  const cardData = {
     idList: list.id,
     urlSource: pageUrl,
     name: selectionText || pageTitle,
+    desc: htmlMetas.description,
     pos: 'top',
   };
 
-  try {
-    const response = await createCard(newCard);
+  const coverData = htmlMetas.imageUrl
+    ? {
+      name: 'Meta image',
+      url: htmlMetas.imageUrl,
+      setCover: true,
+    }
+    : null;
 
-    console.log('Card created!', response);
+  try {
+    const response = await createCard(cardData, coverData);
 
     notifier.success({
       message: `New card successfully added to ${board.name} > ${list.name}!`,
@@ -161,10 +201,14 @@ async function onStart() {
     console.log('No credentials found.');
   }
 
-  chrome.runtime.onMessage.addListener(async (message) => {
-    console.log('Received credentials from popup.');
-    apiCredentials = message.credentials;
-    await loadAndCreateMenus({ noCache: false, storeCredentials: true });
+  chrome.runtime.onMessage.addListener(async ({ type, data }) => {
+    if (type === 'credentials') {
+      console.log('Received credentials from the popup.');
+
+      apiCredentials = data;
+
+      await loadAndCreateMenus({ noCache: false, storeCredentials: true });
+    }
   });
 }
 

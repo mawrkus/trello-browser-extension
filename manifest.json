@@ -3,7 +3,7 @@
 
   "name": "TrelloMe!",
   "description": "Creating new Trello cards from Web pages made easy.",
-  "version": "1.0",
+  "version": "1.0.1",
   "author": "mawrkus <web@sparring-partner.be>",
 
   "icons": {
@@ -26,6 +26,7 @@
       "background/HttpRequest.js",
       "background/Menus.js",
       "background/Notifier.js",
+      "background/Scripting.js",
       "background/Storage.js",
       "background/background.js"
     ]

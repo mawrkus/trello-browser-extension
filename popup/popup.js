@@ -34,7 +34,10 @@ async function onClickSave(event) {
   await storage.set('credentials', credentials, 'credentials data');
   console.log('Credentials stored!');
 
-  chrome.runtime.sendMessage({ credentials });
+  chrome.runtime.sendMessage({
+    type: 'credentials',
+    data: credentials,
+  });
 
   window.close();
 }

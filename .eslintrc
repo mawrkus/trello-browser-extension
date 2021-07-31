@@ -6,10 +6,12 @@
   "globals": {
     "browser": "readonly",
     "chrome": "readonly",
+    "document": "readonly",
     "fetch": "readonly",
     "HttpRequest": "readonly",
     "Menus": "readonly",
     "Notifier": "readonly",
+    "Scripting": "readonly",
     "Storage": "readonly"
   }
 }
