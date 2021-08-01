@@ -3,7 +3,7 @@ function findMetaValue(selectors) {
 
   selectors.some(([selector, attribute]) => {
     const element = document.querySelector(selector);
-    metaValue = element && element.getAttribute(attribute);
+    metaValue = (element && element.getAttribute(attribute)) || '';
     return Boolean(metaValue);
   });
 
