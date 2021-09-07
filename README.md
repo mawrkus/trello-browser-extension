@@ -6,11 +6,13 @@
 
 As the extension is not published in Chrome Web store, the installation is a bit more tedious...
 
-In a terminal:
+In a terminal, clone the repository:
 
 ```shell
 git clone https://github.com/mawrkus/brave-chrome-trello-extension.git
 ```
+
+Or download the code via the "Code" > "Download ZIP" GitHub button and unzip it in a "brave-chrome-trello-extension" folder on your computer.
 
 In Brave/Chrome:
 
