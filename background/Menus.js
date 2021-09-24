@@ -25,7 +25,7 @@ class Menus {
 
     this.menus.create({
       id: 'board-refresh-all',
-      title: '📥 Refresh all boards',
+      title: '♻️ Refresh all boards',
       contexts: ['all'],
       onclick: () => this.onClickRefreshAllBoards(),
     });
@@ -48,7 +48,7 @@ class Menus {
     this.menus.create({
       parentId: `board-${board.id}`,
       id: `board-refresh-${board.id}`,
-      title: `📥 Refresh ${board.name} lists`,
+      title: `♻️ Refresh ${board.name} lists`,
       contexts: ['all'],
       onclick: () => this.onClickRefreshBoardLists(board),
     });

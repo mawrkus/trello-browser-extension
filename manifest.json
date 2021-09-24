@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "TrelloMe!",
-  "description": "Creating new Trello cards from Web pages made easy.",
+  "name": "Trello Card",
+  "description": "Create a Trello card from any Web page, in two clicks",
   "version": "1.0.1",
   "author": "mawrkus <web@sparring-partner.be>",
 

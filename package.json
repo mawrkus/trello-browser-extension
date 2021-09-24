@@ -1,5 +1,6 @@
 {
   "name": "brave-chrome-trello-extension",
+  "description": "Create a Trello card from any Web page, in two clicks",
   "version": "1.0.0",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
