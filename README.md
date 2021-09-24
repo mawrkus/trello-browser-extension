@@ -1,6 +1,6 @@
 # A Trello extension for Brave and Chrome
 
-Create easily a Trello card from a Web page, including metadata (title, description) and a cover image.
+Create a Trello card from any Web page, in two clicks. Including metadata (title, description) and a cover image.
 
 ## Installation
 
