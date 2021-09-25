@@ -32,7 +32,7 @@ class Notifier {
     const options = {
       type: 'basic',
       iconUrl: './icons/trello-logo-96.png',
-      title: 'TrelloMe!',
+      title: 'Trello Card',
       message,
     };
 
@@ -51,7 +51,7 @@ class Notifier {
     this.notifications.create(`error-${Date.now()}`, {
       type: 'basic',
       iconUrl: './icons/trello-logo-96-grey.png',
-      title: `TrelloMe! ${type}`,
+      title: `Trello Card ${type}`,
       message,
     });
   }

@@ -34,7 +34,7 @@
 
   "browser_action": {
     "default_icon": "icons/trello-logo-32.png",
-    "default_title": "TrelloMe!",
+    "default_title": "Trello Card",
     "default_popup": "popup/popup.html"
   }
 }

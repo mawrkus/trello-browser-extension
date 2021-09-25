@@ -18,13 +18,13 @@ In Brave/Chrome:
 
 - Go to this "url": chrome://extensions (or brave://extensions)
 - Activate the "Developer mode" and click on "Load unpacked":
-<img src="docs/settings-developer-mode.png" alt="Extension settings" />
+  <img src="docs/settings-developer-mode.png" alt="Extension settings" />
 
 - Go to the folder where you've cloned the extension and click "Select". The extension is now installed...
-<img src="docs/extension-details.png" alt="Extension details" />
+  <img src="docs/extension-details.png" alt="Extension details" />
 
 - ...and the extension icon appears in the browser's toolbar:
-<img src="docs/toolbar-with-extension.png" alt="Extension icon in toolbar" />
+  <img src="docs/toolbar-with-extension.png" alt="Extension icon in toolbar" />
 
 ## Usage
 
@@ -32,13 +32,13 @@ First you'll need an API key and token.
 In order to obtain them, <a href="https://trello.com/login" target="_blank">login to Trello</a> then visit <a href="https://trello.com/app-key/" target="_blank">https://trello.com/app-key/</a>
 
 Click on the extension icon in the browser's toolbar to enter them:
-<img src="docs/extension-popup.png" alt="TrelloMe! popup" />
+<img src="docs/extension-popup.png" alt="Trello Card popup" />
 
 Once saved, you should be notified that your boards were loaded properly:
 <img src="docs/extension-boards-loaded-notification.png" alt="Boards loaded notification" />
 
 Right-click on any page and choose the board/list you want the new card to be added to:
-<img src="docs/extension-menu.png" alt="TrelloMe! menu" />
+<img src="docs/extension-menu.png" alt="Trello Card menu" />
 
 Et voilà:
 <img src="docs/extension-card-added-notification.png" alt="Card added notification" />
