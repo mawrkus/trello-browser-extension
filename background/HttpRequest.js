@@ -5,7 +5,7 @@ class HttpRequest {
     console.log('HttpClient', this);
   }
 
-  async fetch(url, options) {
+  async fetch(url, options = {}) {
     const response = await fetch(url, options);
 
     if (response.status >= 400) {
@@ -15,7 +15,9 @@ class HttpRequest {
 
     const data = await response.json();
 
-    this.storage.set(url, data, 'cache data').catch(() => {}); // fire & forget
+    if (!options.method || options.method === 'GET') {
+      this.storage.set(url, data, 'cache data').catch(() => {}); // fire & forget
+    }
 
     return data;
   }
