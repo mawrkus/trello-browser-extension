@@ -24,7 +24,7 @@ In Brave/Chrome:
   <img src="docs/images/extension-details.png" alt="Extension details" />
 
 - ...and the extension icon appears in the browser's toolbar:
-  <img src="docs/images/toolbar-with-extension.png" alt="Extension icon in toolbar" />
+  <br /><img src="docs/images/toolbar-with-extension.png" alt="Extension icon in toolbar" />
 
 ## Usage
 
