@@ -1,49 +1,33 @@
-// eslint-disable-next-line no-unused-vars
-class Storage {
-  constructor({ notifier }) {
+export class Storage {
+  constructor() {
     this.storage = chrome.storage.local;
-    this.notifier = notifier;
-    console.log('Storage', this);
   }
 
-  set(key, data, meta = 'data') {
-    return new Promise((resolve, reject) => {
-      this.storage.set({ [key]: data }, () => {
-        if (!chrome.runtime.lastError) {
-          resolve();
-          return;
-        }
+  async set(key, data) {
+    // console.log("storage.set('%s', data)...", key);
 
-        console.error('LocalStorage error!', chrome.runtime.lastError);
+    try {
+      await this.storage.set({ [key]: data });
+    } catch (error) {
+      console.error("Storage.set('%s', data) error!", key, data);
+      console.error(error);
 
-        this.notifier.error({
-          type: 'LocalStorage error!',
-          message: `Error while storing ${meta}: ${chrome.runtime.lastError.message}`,
-        });
-
-        reject(chrome.runtime.lastError);
-      });
-    });
+      throw error;
+    }
   }
 
-  get(key, meta = 'data') {
-    return new Promise((resolve, reject) => {
-      this.storage.get(key, (dataObject) => {
-        if (!chrome.runtime.lastError) {
-          const data = dataObject[key]; // storage always returns an object, even if not found
-          resolve(data);
-          return;
-        }
+  async get(key) {
+    // console.log("storage.get('%s')...", key);
 
-        console.error('LocalStorage error!', chrome.runtime.lastError);
+    try {
+      const dataObject = await this.storage.get(key);
 
-        this.notifier.error({
-          type: 'LocalStorage error!',
-          message: `Error while retrieving ${meta}: ${chrome.runtime.lastError.message}`,
-        });
+      return dataObject[key]; // storage always returns an object, even if not found
+    } catch (error) {
+      console.error("Storage.get('%s') error!", key);
+      console.error(error);
 
-        reject(chrome.runtime.lastError);
-      });
-    });
+      throw error;
+    }
   }
 }

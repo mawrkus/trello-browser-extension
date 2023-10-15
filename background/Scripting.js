@@ -1,17 +1,14 @@
-// eslint-disable-next-line no-unused-vars
-class Scripting {
+export class Scripting {
   constructor() {
-    // manifest v2, changes in v3
-    // See https://developer.chrome.com/blog/crx-scripting-api/
-    this.scripting = chrome.tabs;
-    console.log('Scripting', this);
+    this.scripting = chrome.scripting;
   }
 
-  executeScript(tabId, options) {
-    return new Promise((resolve) => {
-      this.scripting.executeScript(tabId, options, (results) => {
-        resolve(results);
-      });
+  async executeScript(tabId, file) {
+    const [{ result }] = await this.scripting.executeScript({
+      target: { tabId },
+      files: [file],
     });
+
+    return result;
   }
 }
