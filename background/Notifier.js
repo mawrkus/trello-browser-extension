@@ -16,23 +16,23 @@ export class Notifier {
       }
     });
 
-    this.notifications.onClosed.addListener((notificationId, byUser) => {
+    this.notifications.onClosed.addListener((notificationId) => {
       delete this.idsToUrlsMap[notificationId];
     });
   }
 
   async success({ message, clickUrl }) {
     const options = {
-      type: "basic",
-      iconUrl: "../icons/trello-logo-96.png",
-      title: "Trello Card",
+      type: 'basic',
+      iconUrl: '../icons/trello-logo-96.png',
+      title: 'Trello Card',
       message,
     };
 
     // unique ID required by Chrome
     const notificationId = await this.notifications.create(
       `success-${Date.now()}`,
-      options
+      options,
     );
 
     if (clickUrl) {
@@ -43,8 +43,8 @@ export class Notifier {
   async error({ type, message }) {
     // unique ID required by Chrome
     await this.notifications.create(`error-${Date.now()}`, {
-      type: "basic",
-      iconUrl: "../icons/trello-logo-96-grey.png",
+      type: 'basic',
+      iconUrl: '../icons/trello-logo-96-grey.png',
       title: `💥 Trello Card | ${type}`,
       message,
     });

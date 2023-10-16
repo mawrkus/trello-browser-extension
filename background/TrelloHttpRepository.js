@@ -5,11 +5,11 @@ export class TrelloHttpRepository {
 
   async getBoards(forceCacheRefresh = false) {
     const boards = await this.httpClient.get(
-      "/1/members/me/boards?lists=all",
-      forceCacheRefresh
+      '/1/members/me/boards?lists=all',
+      forceCacheRefresh,
     );
 
-    console.log("Trello → %d boards loaded.", boards.length);
+    console.log('Trello → %d boards loaded.', boards.length);
 
     return boards;
   }
@@ -17,7 +17,7 @@ export class TrelloHttpRepository {
   async getBoardLists(board, forceCacheRefresh = false) {
     const lists = await this.httpClient.get(
       `/1/boards/${board.id}/lists`,
-      forceCacheRefresh
+      forceCacheRefresh,
     );
 
     console.log("'%s' → %d lists loaded.", board.name, lists.length);
@@ -26,17 +26,17 @@ export class TrelloHttpRepository {
   }
 
   async createCard(card, cover = null) {
-    console.log("Creating new card...", card, cover);
+    console.log('Creating new card...', card, cover);
 
     // TODO: use URLSearcdhParams
     const qs = Object.entries(card).reduce(
       (acc, [k, v]) => `${acc}&${k}=${encodeURIComponent(v)}&`,
-      ""
+      '',
     );
 
     const newCard = await this.httpClient.post(`/1/cards?${qs}`);
 
-    console.log("New card created!", newCard);
+    console.log('New card created!', newCard);
 
     if (cover) {
       await this.createCardCover(newCard, cover);
@@ -51,12 +51,12 @@ export class TrelloHttpRepository {
     // TODO: use URLSearcdhParams
     const qs = Object.entries(cover).reduce(
       (acc, [k, v]) => `${acc}${k}=${encodeURIComponent(v)}&`,
-      ""
+      '',
     );
 
     try {
       const newCover = await this.httpClient.post(
-        `/1/cards/${card.id}/attachments?${qs}`
+        `/1/cards/${card.id}/attachments?${qs}`,
       );
 
       console.log("Cover created for card id='%s'!", card.id, newCover);

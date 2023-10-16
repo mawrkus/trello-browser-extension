@@ -13,7 +13,7 @@ export class HttpClient {
       `${url.origin}${url.pathname}?${new URLSearchParams([
         ...Array.from(url.searchParams.entries()),
         ...this.credentialsParams.entries(),
-      ])}`
+      ])}`,
     );
   }
 
@@ -29,14 +29,14 @@ export class HttpClient {
     const response = await fetch(url, options);
 
     if (response.status >= 400) {
-      console.error("Fetch error!", response);
+      console.error('Fetch error!', response);
 
       throw new Error(`HTTP error ${response.status}!`);
     }
 
     const data = await response.json();
 
-    if (!options.method || options.method.toUpperCase() === "GET") {
+    if (!options.method || options.method.toUpperCase() === 'GET') {
       const cacheKey = relativeUrl;
 
       this.cacheClient.set(cacheKey, data).catch(() => {}); // fire & forget
@@ -74,6 +74,6 @@ export class HttpClient {
   }
 
   post(relativeUrl) {
-    return this.fetch(relativeUrl, { method: "POST" });
+    return this.fetch(relativeUrl, { method: 'POST' });
   }
 }
