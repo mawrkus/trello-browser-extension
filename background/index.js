@@ -1,131 +1,116 @@
-import { HttpClient } from "./HttpClient.js";
-import { Menus } from "./Menus.js";
-import { Notifier } from "./Notifier.js";
-import { Scripting } from "./Scripting.js";
-import { Storage } from "./Storage.js";
-import { TrelloHttpRepository } from "./TrelloHttpRepository.js";
+import { HttpClient } from './HttpClient.js';
+import { Menus } from './Menus.js';
+import { Notifier } from './Notifier.js';
+import { Scripting } from './Scripting.js';
+import { Storage } from './Storage.js';
+import { TrelloHttpRepository } from './TrelloHttpRepository.js';
 
-console.info("Initializing service worker...");
+console.info('Initializing service worker...');
 
 const storage = new Storage();
 const notifier = new Notifier();
 const scripting = new Scripting();
 
 export const httpClient = new HttpClient({
-  baseUrl: "https://api.trello.com",
+  baseUrl: 'https://api.trello.com',
   cacheClient: storage,
 });
 
 const trelloRepository = new TrelloHttpRepository({ httpClient });
 
 const menus = new Menus({
-  onClickRefreshAllBoards: refreshAllBoards, // eslint-disable-line no-use-before-define
-  onClickRefreshBoardLists: refreshBoardLists, // eslint-disable-line no-use-before-define
-  onClickList, // eslint-disable-line no-use-before-define
+  onClickRefreshAllBoards: recreateAllMenus,
+  onClickRefreshBoardLists: recreateBoardMenu,
+  onClickList: addCardToList,
 });
 
-async function createAllMenus(forceCacheRefresh = false) {
-  const boards = await loadBoards(forceCacheRefresh);
+async function loadBoards(forceRefresh = false) {
+  let boards = [];
 
-  if (!boards.length) {
-    return [];
-  }
-
-  await menus.removeAll(); // We do this in case we've received new credentials
-
-  menus.createBoards(boards);
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const board of boards) {
-    // eslint-disable-next-line no-await-in-loop
-    const lists = await loadLists(board, forceCacheRefresh);
-    if (lists) {
-      menus.createBoardLists(board, lists);
-    }
+  try {
+    boards = await trelloRepository.getBoards(forceRefresh);
+  } catch (error) {
+    notifier.error({
+      type: 'Load Error',
+      message: `Error loading boards: ${error.message}!`,
+    });
   }
 
   return boards;
 }
 
-async function loadBoards(forceCacheRefresh) {
+async function loadBoardLists(board, forceRefresh = false) {
+  let lists = [];
+
   try {
-    return trelloRepository.getBoards(forceCacheRefresh);
+    lists = await trelloRepository.getBoardLists(board, forceRefresh);
   } catch (error) {
     notifier.error({
-      type: "Load Error",
-      type: `Error loading boards: ${error.message}!`,
-    });
-
-    return [];
-  }
-}
-
-async function loadLists(board, forceCacheRefresh = false) {
-  try {
-    return trelloRepository.getBoardLists(board, forceCacheRefresh);
-  } catch (error) {
-    notifier.error({
-      type: "Load Error",
+      type: 'Load Error',
       message: `Error loading "${board.name}" lists: ${error.message}`,
     });
-
-    return [];
   }
+
+  return lists;
 }
 
-async function refreshAllBoards() {
-  const boards = await loadBoards(true);
-
-  if (!boards.length) {
-    return;
-  }
+async function createAllMenus() {
+  const boards = await loadBoards();
 
   await menus.removeAll();
 
-  menus.createBoards(boards);
+  menus.create();
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const board of boards) {
-    // eslint-disable-next-line no-await-in-loop
-    const lists = await loadLists(board, true);
+    await createBoardMenu(board);
+  }
+}
 
-    if (lists.length) {
-      menus.createBoardLists(board, lists);
-    }
+async function createBoardMenu(board, forceRefresh = false) {
+  const lists = await loadBoardLists(board, forceRefresh);
+
+  menus.addBoard(board, lists);
+}
+
+async function recreateAllMenus() {
+  const boards = await loadBoards(true);
+
+  await menus.removeAll();
+
+  menus.create();
+
+  for (const board of boards) {
+    await createBoardMenu(board, true);
   }
 
   notifier.success({
-    message: `${boards.length} board(s) successfully refreshed!`,
+    message: `${boards.length} boards successfully loaded!`,
   });
 }
 
-async function refreshBoardLists(board) {
-  const lists = await loadLists(board, true);
-  if (!lists) {
-    return;
-  }
+async function recreateBoardMenu(board) {
+  const lists = await loadBoardLists(board, true);
 
-  await menus.remove(`board-${board.id}`);
-  menus.createBoard(board);
-  menus.createBoardLists(board, lists);
+  await menus.removeBoard(board.id);
+
+  menus.addBoard(board, lists);
 
   notifier.success({
-    type: board.name,
-    message: `"${board.name}" → ${lists.length} list(s) successfully refreshed!`,
+    message: `"${board.name}" → ${lists.length} lists successfully loaded!`,
   });
 }
 
-async function buildCardAndCoverData(info, tab, list) {
-  const { selectionText } = info;
+async function buildCardAndCoverData(onClickData, tab, list) {
+  const { selectionText } = onClickData;
   const { id: tabId, url: pageUrl, title: pageTitle } = tab;
 
   const htmlMetas = await scripting
-    .executeScript(tabId, "./background/injection-scripts/getHtmlMetas.js")
-    .catch(() => ({ description: "", imageUrl: null }));
+    .executeScript(tabId, './background/injection-scripts/getHtmlMetas.js')
+    .catch(() => ({ description: '', imageUrl: null }));
 
   const desc = htmlMetas.description
     ? `${htmlMetas.description} (...)`
-    : `No description available.`;
+    : 'No description available.';
 
   return {
     card: {
@@ -133,20 +118,20 @@ async function buildCardAndCoverData(info, tab, list) {
       urlSource: pageUrl,
       name: selectionText || pageTitle,
       desc: `${desc}\n\n🔗 Source: ${pageUrl}`,
-      pos: "top",
+      pos: 'top',
     },
     cover: htmlMetas.imageUrl
       ? {
-          name: "Cover",
-          url: htmlMetas.imageUrl,
-          setCover: true,
-        }
+        name: 'Cover',
+        url: htmlMetas.imageUrl,
+        setCover: true,
+      }
       : null,
   };
 }
 
-async function onClickList(info, tab, board, list) {
-  const { card, cover } = await buildCardAndCoverData(info, tab, list);
+async function addCardToList(onClickData, tab, board, list) {
+  const { card, cover } = await buildCardAndCoverData(onClickData, tab, list);
 
   try {
     const newCard = await trelloRepository.createCard(card, cover);
@@ -157,22 +142,24 @@ async function onClickList(info, tab, board, list) {
     });
   } catch (error) {
     notifier.error({
-      type: "Create Card Error",
+      type: 'Create Card Error',
       message: `Error while creating new card: ${error.message}!`,
     });
   }
 }
 
 async function onReceivePopupMessage({ type, data }) {
-  if (type !== "credentials") {
+  if (type !== 'credentials') {
     return;
   }
 
+  console.info('Credentials received from popup.');
+
   try {
-    await storage.set("credentials", data);
+    await storage.set('credentials', data);
   } catch (error) {
     notifier.error({
-      type: "Storing Credentials Error",
+      type: 'Storing Credentials Error',
       message: `Error while storing credentials: ${error.message}!`,
     });
 
@@ -181,30 +168,24 @@ async function onReceivePopupMessage({ type, data }) {
 
   httpClient.setCredentials(data);
 
-  notifier.success({ message: "Credentials successfully saved!" });
+  notifier.success({ message: 'Credentials successfully saved!' });
 
-  const boards = await createAllMenus(true);
-
-  if (boards.length) {
-    notifier.success({
-      message: `${boards.length} boards successfully loaded!`,
-    });
-  }
+  await recreateAllMenus();
 }
 
-async function onStart() {
-  const credentials = await storage.get("credentials");
+// eslint-disable-next-line no-undef, no-restricted-globals
+self.addEventListener('activate', async () => {
+  console.info('Service worker activated.');
+
+  const credentials = await storage.get('credentials');
 
   if (credentials) {
     httpClient.setCredentials(credentials);
 
     await createAllMenus();
   } else {
-    console.warn("No credentials found!");
+    console.warn('No credentials found!');
   }
 
   chrome.runtime.onMessage.addListener(onReceivePopupMessage);
-}
-
-chrome.runtime.onInstalled.addListener(onStart);
-chrome.runtime.onStartup.addListener(onStart);
+});
