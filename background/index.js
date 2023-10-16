@@ -5,7 +5,9 @@ import { Scripting } from './Scripting.js';
 import { Storage } from './Storage.js';
 import { TrelloHttpRepository } from './TrelloHttpRepository.js';
 
-console.info('Initializing service worker...');
+console.info('Initializing background script...');
+
+let initialized = false;
 
 const storage = new Storage();
 const notifier = new Notifier();
@@ -173,9 +175,12 @@ async function onReceivePopupMessage({ type, data }) {
   await recreateAllMenus();
 }
 
-// eslint-disable-next-line no-undef, no-restricted-globals
-self.addEventListener('activate', async () => {
-  console.info('Service worker activated.');
+async function init() {
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
 
   const credentials = await storage.get('credentials');
 
@@ -188,4 +193,17 @@ self.addEventListener('activate', async () => {
   }
 
   chrome.runtime.onMessage.addListener(onReceivePopupMessage);
+
+  console.log('Background script initialized!');
+}
+
+chrome.runtime.onStartup.addListener(async () => {
+  console.info('Extension started.');
+  await init();
+});
+
+// eslint-disable-next-line no-undef, no-restricted-globals
+self.addEventListener('activate', async () => {
+  console.info('Service worker activated.');
+  await init();
 });
