@@ -5,10 +5,6 @@ import { Scripting } from './Scripting.js';
 import { Storage } from './Storage.js';
 import { TrelloHttpRepository } from './TrelloHttpRepository.js';
 
-console.info('Initializing background script...');
-
-let initialized = false;
-
 const storage = new Storage();
 const notifier = new Notifier();
 const scripting = new Scripting();
@@ -27,7 +23,7 @@ const menus = new Menus({
 });
 
 async function loadBoards(forceRefresh = false) {
-  let boards = [];
+  let boards = null;
 
   try {
     boards = await trelloRepository.getBoards(forceRefresh);
@@ -42,7 +38,7 @@ async function loadBoards(forceRefresh = false) {
 }
 
 async function loadBoardLists(board, forceRefresh = false) {
-  let lists = [];
+  let lists = null;
 
   try {
     lists = await trelloRepository.getBoardLists(board, forceRefresh);
@@ -57,7 +53,13 @@ async function loadBoardLists(board, forceRefresh = false) {
 }
 
 async function createAllMenus() {
+  console.log('Creating menus...');
+
   const boards = await loadBoards();
+
+  if (!boards) {
+    return;
+  }
 
   await menus.removeAll();
 
@@ -66,16 +68,31 @@ async function createAllMenus() {
   for (const board of boards) {
     await createBoardMenu(board);
   }
+
+  await storage.set('hasMenus', true).catch((error) => {
+    console.error('Error while storing the "hasMenus" flag!');
+    console.error(error);
+  });
 }
 
 async function createBoardMenu(board, forceRefresh = false) {
   const lists = await loadBoardLists(board, forceRefresh);
 
+  if (!lists) {
+    return;
+  }
+
   menus.addBoard(board, lists);
 }
 
 async function recreateAllMenus() {
+  console.log('Recreating menus...');
+
   const boards = await loadBoards(true);
+
+  if (!boards) {
+    return;
+  }
 
   await menus.removeAll();
 
@@ -88,10 +105,19 @@ async function recreateAllMenus() {
   notifier.success({
     message: `${boards.length} boards successfully loaded!`,
   });
+
+  await storage.set('hasMenus', true).catch((error) => {
+    console.error('Error while storing the "hasMenus" flag!');
+    console.error(error);
+  });
 }
 
 async function recreateBoardMenu(board) {
   const lists = await loadBoardLists(board, true);
+
+  if (!lists) {
+    return;
+  }
 
   await menus.removeBoard(board.id);
 
@@ -100,6 +126,10 @@ async function recreateBoardMenu(board) {
   notifier.success({
     message: `"${board.name}" → ${lists.length} lists successfully loaded!`,
   });
+}
+
+async function createMinimalMenu() {
+  await menus.create();
 }
 
 async function buildCardAndCoverData(onClickData, tab, list) {
@@ -150,60 +180,33 @@ async function addCardToList(onClickData, tab, board, list) {
   }
 }
 
-async function onReceivePopupMessage({ type, data }) {
-  if (type !== 'credentials') {
-    return;
-  }
+chrome.runtime.onInstalled.addListener(async () => {
+  console.log('Extension installed.');
 
-  console.info('Credentials received from popup.');
-
-  try {
-    await storage.set('credentials', data);
-  } catch (error) {
-    notifier.error({
-      type: 'Storing Credentials Error',
-      message: `Error while storing credentials: ${error.message}!`,
-    });
-
-    return;
-  }
-
-  httpClient.setCredentials(data);
-
-  notifier.success({ message: 'Credentials successfully saved!' });
-
-  await recreateAllMenus();
-}
+  await createMinimalMenu();
+});
 
 async function init() {
-  if (initialized) {
-    return;
-  }
-
-  initialized = true;
+  console.log('Initializing background script...');
 
   const credentials = await storage.get('credentials');
 
-  if (credentials) {
-    httpClient.setCredentials(credentials);
-
-    await createAllMenus();
-  } else {
-    console.warn('No credentials found!');
+  if (!credentials) {
+    console.warn('No credentials!');
+    return;
   }
 
-  chrome.runtime.onMessage.addListener(onReceivePopupMessage);
+  const hasMenus = await storage.get('hasMenus').catch((error) => {
+    console.error('Error while getting the "hasMenus" flag from storage!');
+    console.error(error);
+    return false;
+  });
 
-  console.log('Background script initialized!');
+  if (!hasMenus) {
+    await recreateAllMenus();
+  } else {
+    await createAllMenus();
+  }
 }
 
-chrome.runtime.onStartup.addListener(async () => {
-  console.info('Extension started.');
-  await init();
-});
-
-// eslint-disable-next-line no-undef, no-restricted-globals
-self.addEventListener('activate', async () => {
-  console.info('Service worker activated.');
-  await init();
-});
+init().then(() => console.log('Background script initialized.'));

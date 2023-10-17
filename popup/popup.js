@@ -1,4 +1,4 @@
-console.info('Initializing popup...');
+console.log('Popup → opening...');
 
 async function onClickSave(event) {
   event.preventDefault();
@@ -23,28 +23,32 @@ async function onClickSave(event) {
   }, {});
 
   if (!credentials.key || !credentials.token) {
+    console.log('Popup → missing key and/or token!');
     return;
   }
 
-  chrome.runtime.sendMessage({
-    type: 'credentials',
-    data: credentials,
+  // we store them for the service worker, once it's active
+  await chrome.storage.local.set({ credentials }).catch((error) => {
+    console.error('Error while saving credentials!');
+    console.error(error);
   });
+
+  console.log('Popup → credentials saved.');
 
   window.close();
 }
 
 document.body.onload = async () => {
-  console.info('Popup created.');
-
-  const credentials = await chrome.storage.local.get('credentials');
+  const { credentials } = await chrome.storage.local.get('credentials');
 
   if (credentials) {
+    console.log('Popup → credentials found.');
+
     ['key', 'token'].forEach((k) => {
       document.getElementById(`js-api-${k}`).value = credentials[k];
     });
   } else {
-    console.warn('No credentials found!');
+    console.log('Popup → no credentials!');
   }
 
   Array.from(document.querySelectorAll('.input')).forEach((inputElement) => {
@@ -56,4 +60,6 @@ document.body.onload = async () => {
   document
     .getElementById('js-save-settings')
     .addEventListener('click', onClickSave);
+
+  console.log('Popup → opened.');
 };

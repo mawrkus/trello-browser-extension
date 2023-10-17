@@ -4,26 +4,20 @@ export class Menus {
     onClickRefreshBoardLists,
     onClickList,
   }) {
-    this.menus = chrome.contextMenus;
-    this.onClickMenuItem = this.onClickMenuItem.bind(this);
-
     this.onClickRefreshAllBoards = onClickRefreshAllBoards;
     this.onClickRefreshBoardLists = onClickRefreshBoardLists;
     this.onClickList = onClickList;
+
+    this.menus = chrome.contextMenus;
+    this.onClickMenuItem = this.onClickMenuItem.bind(this);
   }
 
-  removeAll() {
-    this.menus.onClicked.removeListener(this.onClickMenuItem);
-
-    return new Promise((resolve) => { this.menus.removeAll(resolve); });
-  }
-
-  removeById(id) {
-    return new Promise((resolve) => { this.menus.remove(id, resolve); });
+  bindEvents() {
+    this.menus.onClicked.addListener(this.onClickMenuItem);
   }
 
   onClickMenuItem(onClickData, tab) {
-    // console.log('Menu item clicked', onClickData);
+    console.log('Menu item clicked', onClickData);
 
     const { menuItemId } = onClickData;
 
@@ -64,7 +58,7 @@ export class Menus {
       type: 'separator',
     });
 
-    this.menus.onClicked.addListener(this.onClickMenuItem);
+    this.bindEvents();
   }
 
   addBoard(board, lists) {
@@ -102,5 +96,15 @@ export class Menus {
 
   removeBoard(boardId) {
     return this.removeById(`board-${boardId}`);
+  }
+
+  removeById(id) {
+    return new Promise((resolve) => { this.menus.remove(id, resolve); });
+  }
+
+  removeAll() {
+    this.menus.onClicked.removeListener(this.onClickMenuItem);
+
+    return new Promise((resolve) => { this.menus.removeAll(resolve); });
   }
 }

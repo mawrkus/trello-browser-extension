@@ -2,29 +2,36 @@ export class HttpClient {
   constructor({ baseUrl, cacheClient }) {
     this.baseUrl = baseUrl;
     this.cacheClient = cacheClient;
-
-    this.credentialsParams = null;
   }
 
-  buildUrl(relativeUrl) {
+  async buildUrl(relativeUrl) {
+    const credentials = await this.cacheClient.get('credentials').catch((error) => {
+      console.error('Error while trying retrieving credentials!');
+      console.error(error);
+      return null;
+    });
+
+    if (!credentials) {
+      console.error('No credentials found!');
+      throw new Error('No API key/token!');
+    }
+
+    const credentialsParams = new URLSearchParams(credentials);
+
     const url = new URL(relativeUrl, this.baseUrl);
 
     return new URL(
       `${url.origin}${url.pathname}?${new URLSearchParams([
         ...Array.from(url.searchParams.entries()),
-        ...this.credentialsParams.entries(),
+        ...credentialsParams.entries(),
       ])}`,
     );
   }
 
-  setCredentials(credentials) {
-    this.credentialsParams = new URLSearchParams(credentials);
-  }
-
   async fetch(relativeUrl, options = {}) {
-    const url = this.buildUrl(relativeUrl);
+    const url = await this.buildUrl(relativeUrl);
 
-    // console.log("HttpClient.fetch", url, options);
+    // console.log('HttpClient.fetch', url, options);
 
     const response = await fetch(url, options);
 
