@@ -14,7 +14,7 @@ git clone https://github.com/mawrkus/trello-browser-extension.git
 
 Or download the code by clicking on the "[Code" > "Download ZIP](https://github.com/mawrkus/trello-browser-extension/archive/refs/heads/master.zip)" button in GitHub and unzip it in a "brave-chrome-trello-extension" folder on your computer.
 
-### Brave/Chrome users
+### <img src="./docs/images/browser-brave.png" width="20" /><img src="./docs/images/browser-chrome.png" width="18" />&nbsp;Brave/Chrome users
 
 - Go to this "url": [chrome://extensions](chrome://extensions) (or [brave://extensions](brave://extensions))
 - Activate the "Developer mode" and click on "Load unpacked":
@@ -26,7 +26,7 @@ Or download the code by clicking on the "[Code" > "Download ZIP](https://github.
 - ...and its icon appears in the browser's toolbar:
   <br /><img src="docs/images/toolbar-with-extension.png" alt="Extension icon in toolbar" />
 
-### Firefox users
+### <img src="./docs/images/browser-firefox.png" width="18" />&nbsp;Firefox users
 
 The installation process is similar, but starts at this "url": [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox). After clicking on "Load Temporary Add-on...", just select the file "manifest-firefox.json".
 
