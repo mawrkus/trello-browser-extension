@@ -31,17 +31,17 @@ In Brave/Chrome:
 First you'll need an API key and token.
 In order to obtain them, <a href="https://trello.com/login" target="_blank">login to Trello</a> then visit <a href="https://trello.com/app-key/" target="_blank">https://trello.com/app-key/</a>
 
-Once obtained your API key and token, click on the extension icon in the browser's toolbar to add them:
+Once obtained your API key and token, click on the extension icon in the browser's toolbar to save them:
 <img src="docs/images/extension-popup.png" alt="Trello Card popup" />
 
-After saving, right-click on the page to open the contextual menu and click on "Refresh all boards":
+Once saved, right-click on the page to open the contextual menu and click on "Refresh all boards":
 <img src="docs/images/extension-refresh.png" alt ="Refresh menu item" />
 
-After some time, you should be notified that your boards were loaded properly:
+After some time, you should be notified that your boards were successfully loaded:
 <img src="docs/images/extension-boards-loaded-notification.png" alt="Boards loaded notification" />
 
 Now you can right-click on any page and choose the board/list you want the new card to be added to:
 <img src="docs/images/extension-menu.png" alt="Trello Card menu" />
 
-_Et voilà!_
+Et voilà! 🎉
 <img src="docs/images/extension-card-added-notification.png" alt="Card added notification" />
