@@ -18,7 +18,7 @@ In a terminal, clone the repository:
 git clone https://github.com/mawrkus/trello-browser-extension.git
 ```
 
-Or download the code by clicking on the "[Code" > "Download ZIP](https://github.com/mawrkus/trello-browser-extension/archive/refs/heads/master.zip)" button in GitHub and unzip it in a "brave-chrome-trello-extension" folder on your computer.
+(Or you can also download the code directly by clicking on the "[Code" > "Download ZIP](https://github.com/mawrkus/trello-browser-extension/archive/refs/heads/master.zip)" button in GitHub and unzip it in a "brave-chrome-trello-extension" folder on your computer)
 
 ### <img src="./docs/images/browser-brave.png" width="20" /><img src="./docs/images/browser-chrome.png" width="18" />&nbsp;Brave/Chrome users
 
