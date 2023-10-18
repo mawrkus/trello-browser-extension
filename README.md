@@ -1,6 +1,6 @@
 # A browser extension for Trello
 
-This extension helps you to create a Trello card from any Web page, in two clicks. Including metadata (title, description) and a cover image.
+A browser extension to easily create Trello cards from any Web page in two clicks. Including metadata (title, description) and a cover image.
 
 ## Installation
 

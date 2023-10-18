@@ -1,6 +1,6 @@
 {
-  "name": "brave-chrome-trello-extension",
-  "description": "Create a Trello card from any Web page, in two clicks",
+  "name": "trello-browser-extension",
+  "description": "A browser extension to easily create Trello cards from any Web page in two clicks. Including metadata (title, description) and a cover image.",
   "version": "1.0.0",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
