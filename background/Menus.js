@@ -123,6 +123,9 @@ export class Menus {
       console.error(error);
 
       await this.removeBoard(board.id);
+      await this.addBoard(board, lists);
+
+      return;
     }
 
     await this.addBoardLists(board, lists);
