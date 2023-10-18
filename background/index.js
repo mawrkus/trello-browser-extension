@@ -17,13 +17,13 @@ const trelloRepository = new TrelloHttpRepository({
 });
 
 const menus = new Menus({
-  onClickRefreshAllBoards: createAllMenus,
+  onClickRefreshAllBoards: () => createAllMenus(true),
   onClickRefreshBoardLists: (board) => createBoardMenu(board, true),
   onClickList: addCardToList,
   storage,
 });
 
-async function createBoardMenu(board, refresh = false) {
+async function createBoardMenu(board, refresh) {
   let lists = null;
 
   try {
@@ -50,7 +50,7 @@ async function createBoardMenu(board, refresh = false) {
   await menus.addBoard(board, lists);
 }
 
-async function createAllMenus() {
+async function createAllMenus(refresh) {
   let boards = null;
 
   try {
@@ -69,12 +69,14 @@ async function createAllMenus() {
   await menus.createDefault();
 
   for (const board of boards) {
-    await createBoardMenu(board);
+    await createBoardMenu(board, false);
   }
 
-  notifier.success({
-    message: `${boards.length} boards successfully loaded!`,
-  });
+  if (refresh) {
+    notifier.success({
+      message: `${boards.length} boards successfully loaded!`,
+    });
+  }
 }
 
 async function buildCardAndCoverData(onClickData, tab, list) {
@@ -129,4 +131,21 @@ chrome.runtime.onInstalled.addListener(async () => {
   console.log('Extension installed.');
 
   await menus.createDefault();
+});
+
+chrome.runtime.onStartup.addListener(async () => {
+  console.log('Extension started.');
+
+  const credentials = await storage.get('credentials').catch((error) => {
+    console.error('Error while retrieving credentials!');
+    console.error(error);
+    return null;
+  });
+
+  if (!credentials) {
+    console.warn('No credentials!');
+    return;
+  }
+
+  await createAllMenus(false);
 });
