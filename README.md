@@ -1,20 +1,20 @@
-# A Trello extension for Brave and Chrome
+# A browser extension for Trello
 
-Create a Trello card from any Web page, in two clicks. Including metadata (title, description) and a cover image.
+This extension helps you to create a Trello card from any Web page, in two clicks. Including metadata (title, description) and a cover image.
 
 ## Installation
 
-As the extension is not published in Chrome Web store, the installation is a bit more tedious...
+As the extension is not published, the installation takes a bit more time, but is not too complex.
 
 In a terminal, clone the repository:
 
 ```shell
-git clone https://github.com/mawrkus/brave-chrome-trello-extension.git
+git clone https://github.com/mawrkus/trello-browser-extension.git
 ```
 
-Or download the code via the "Code" > "Download ZIP" GitHub button and unzip it in a "brave-chrome-trello-extension" folder on your computer.
+Or download the code by clicking on the "[Code" > "Download ZIP](https://github.com/mawrkus/trello-browser-extension/archive/refs/heads/master.zip)" button in GitHub and unzip it in a "brave-chrome-trello-extension" folder on your computer.
 
-In Brave/Chrome:
+### Brave/Chrome users
 
 - Go to this "url": [chrome://extensions](chrome://extensions) (or [brave://extensions](brave://extensions))
 - Activate the "Developer mode" and click on "Load unpacked":
@@ -25,6 +25,12 @@ In Brave/Chrome:
 
 - ...and its icon appears in the browser's toolbar:
   <br /><img src="docs/images/toolbar-with-extension.png" alt="Extension icon in toolbar" />
+
+### Firefox users
+
+The installation process is similar, but starts at this "url": [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox). After clicking on "Load Temporary Add-on...", just select the file "manifest-firefox.json".
+
+For more information: [https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html](https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html)
 
 ## Usage
 
