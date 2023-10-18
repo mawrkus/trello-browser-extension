@@ -3,10 +3,12 @@ export class Menus {
     onClickRefreshAllBoards,
     onClickRefreshBoardLists,
     onClickList,
+    storage,
   }) {
     this.onClickRefreshAllBoards = onClickRefreshAllBoards;
     this.onClickRefreshBoardLists = onClickRefreshBoardLists;
     this.onClickList = onClickList;
+    this.storage = storage;
 
     this.menus = chrome.contextMenus;
     this.onClickMenuItem = this.onClickMenuItem.bind(this);
@@ -44,7 +46,7 @@ export class Menus {
     console.warn('Unknown menu item!', onClickData);
   }
 
-  createDefault() {
+  async createDefault() {
     this.menus.create({
       id: 'refresh-all-boards',
       title: '♻️ Refresh all boards',
@@ -57,7 +59,7 @@ export class Menus {
     });
   }
 
-  addBoard(board, lists) {
+  async addBoard(board, lists) {
     this.menus.create({
       id: `board-${board.id}`,
       title: board.name,
@@ -77,17 +79,53 @@ export class Menus {
       type: 'separator',
     });
 
-    lists.forEach((list) => {
+    await this.addBoardLists(board, lists);
+  }
+
+  async addBoardLists(board, lists) {
+    const parentId = `board-${board.id}`;
+
+    const idPrefix = `add-to-${JSON.stringify({
+      id: board.id,
+      name: board.name,
+    })}`;
+
+    const listMenuItemIds = lists.map(({ id, name }) => {
+      const menuItemId = `${idPrefix}-${JSON.stringify({ id, name })}`;
+
       this.menus.create({
-        parentId: `board-${board.id}`,
-        id: `add-to-${JSON.stringify({
-          id: board.id,
-          name: board.name,
-        })}-${JSON.stringify({ id: list.id, name: list.name })}`,
-        title: list.name,
+        parentId,
+        id: menuItemId,
+        title: name,
         contexts: ['all'],
       });
+
+      return menuItemId;
     });
+
+    await this.storage.set(parentId, listMenuItemIds).catch((error) => {
+      console.error('Error while storing menu items for board "%s"!', board.name);
+      console.error(error);
+    });
+  }
+
+  async updateBoard(board, lists) {
+    const parentMenuId = `board-${board.id}`;
+
+    try {
+      const listMenuItemIds = await this.storage.get(parentMenuId);
+
+      for (const id of listMenuItemIds) {
+        await this.removeById(id);
+      }
+    } catch (error) {
+      console.error('Error while removing menu items for board "%s"!', board.name);
+      console.error(error);
+
+      await this.removeBoard(board.id);
+    }
+
+    await this.addBoardLists(board, lists);
   }
 
   removeBoard(boardId) {

@@ -7,11 +7,12 @@ import { TrelloHttpRepository } from './TrelloHttpRepository.js';
 
 const notifier = new Notifier();
 const scripting = new Scripting();
+const storage = new Storage();
 
 const trelloRepository = new TrelloHttpRepository({
   httpClient: new HttpClient({
     baseUrl: 'https://api.trello.com',
-    storage: new Storage(),
+    storage,
   }),
 });
 
@@ -19,6 +20,7 @@ const menus = new Menus({
   onClickRefreshAllBoards: createAllMenus,
   onClickRefreshBoardLists: (board) => createBoardMenu(board, true),
   onClickList: addCardToList,
+  storage,
 });
 
 async function createBoardMenu(board, refresh = false) {
@@ -36,9 +38,7 @@ async function createBoardMenu(board, refresh = false) {
   }
 
   if (refresh) {
-    await menus.removeBoard(board.id);
-
-    menus.addBoard(board, lists);
+    await menus.updateBoard(board, lists);
 
     notifier.success({
       message: `"${board.name}" → ${lists.length} lists successfully loaded!`,
@@ -47,7 +47,7 @@ async function createBoardMenu(board, refresh = false) {
     return;
   }
 
-  menus.addBoard(board, lists);
+  await menus.addBoard(board, lists);
 }
 
 async function createAllMenus() {
@@ -66,7 +66,7 @@ async function createAllMenus() {
 
   await menus.removeAll();
 
-  menus.createDefault();
+  await menus.createDefault();
 
   for (const board of boards) {
     await createBoardMenu(board);

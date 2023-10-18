@@ -6,7 +6,7 @@ export class TrelloHttpRepository {
   async getBoards() {
     const boards = await this.httpClient.get('/1/members/me/boards?lists=all');
 
-    console.log('Trello → %d boards loaded.', boards.length);
+    console.log('Trello → %d boards.', boards.length);
 
     return boards;
   }
@@ -14,7 +14,7 @@ export class TrelloHttpRepository {
   async getBoardLists(board) {
     const lists = await this.httpClient.get(`/1/boards/${board.id}/lists`);
 
-    console.log("'%s' → %d lists loaded.", board.name, lists.length);
+    console.log("'%s' → %d lists.", board.name, lists.length);
 
     return lists;
   }
