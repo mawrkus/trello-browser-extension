@@ -33,7 +33,7 @@ git clone https://github.com/mawrkus/trello-browser-extension.git
 
 - ...and its icon appears in the browser's toolbar:
 
-  <br /><img src="docs/images/toolbar-with-extension.png" alt="Extension icon in toolbar" />
+  <img src="docs/images/toolbar-with-extension.png" alt="Extension icon in toolbar" />
 
 ### <img src="./docs/images/browser-firefox.png" width="18" />&nbsp;Firefox users
 
