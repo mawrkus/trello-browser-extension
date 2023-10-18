@@ -3,22 +3,16 @@ export class TrelloHttpRepository {
     this.httpClient = httpClient;
   }
 
-  async getBoards(forceCacheRefresh = false) {
-    const boards = await this.httpClient.get(
-      '/1/members/me/boards?lists=all',
-      forceCacheRefresh,
-    );
+  async getBoards() {
+    const boards = await this.httpClient.get('/1/members/me/boards?lists=all');
 
     console.log('Trello → %d boards loaded.', boards.length);
 
     return boards;
   }
 
-  async getBoardLists(board, forceCacheRefresh = false) {
-    const lists = await this.httpClient.get(
-      `/1/boards/${board.id}/lists`,
-      forceCacheRefresh,
-    );
+  async getBoardLists(board) {
+    const lists = await this.httpClient.get(`/1/boards/${board.id}/lists`);
 
     console.log("'%s' → %d lists loaded.", board.name, lists.length);
 

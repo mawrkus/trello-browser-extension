@@ -1,12 +1,12 @@
 export class HttpClient {
-  constructor({ baseUrl, cacheClient }) {
+  constructor({ baseUrl, storage }) {
     this.baseUrl = baseUrl;
-    this.cacheClient = cacheClient;
+    this.storage = storage;
   }
 
   async buildUrl(relativeUrl) {
-    const credentials = await this.cacheClient.get('credentials').catch((error) => {
-      console.error('Error while trying retrieving credentials!');
+    const credentials = await this.storage.get('credentials').catch((error) => {
+      console.error('Error while retrieving credentials!');
       console.error(error);
       return null;
     });
@@ -41,43 +41,11 @@ export class HttpClient {
       throw new Error(`HTTP error ${response.status}!`);
     }
 
-    const data = await response.json();
-
-    if (!options.method || options.method.toUpperCase() === 'GET') {
-      const cacheKey = relativeUrl;
-
-      this.cacheClient.set(cacheKey, data).catch(() => {}); // fire & forget
-    }
-
-    return data;
+    return response.json();
   }
 
-  async get(relativeUrl, forceCacheRefresh = false) {
-    if (forceCacheRefresh) {
-      return this.fetch(relativeUrl);
-    }
-
-    const cacheKey = relativeUrl;
-
-    return this.cacheClient
-      .get(cacheKey)
-      .then((data) => {
-        if (data) {
-          // console.log(
-          //   "HttpClient.get('%s') retrieved from HTTP cache.",
-          //   relativeUrl
-          // );
-
-          return data;
-        }
-
-        const error = `No data found in HTTP cache for key '${cacheKey}'!`;
-
-        console.warn(error);
-
-        throw new Error(error);
-      })
-      .catch(() => this.fetch(relativeUrl));
+  async get(relativeUrl) {
+    return this.fetch(relativeUrl);
   }
 
   post(relativeUrl) {

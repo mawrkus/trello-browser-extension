@@ -10,14 +10,12 @@ export class Menus {
 
     this.menus = chrome.contextMenus;
     this.onClickMenuItem = this.onClickMenuItem.bind(this);
-  }
 
-  bindEvents() {
     this.menus.onClicked.addListener(this.onClickMenuItem);
   }
 
   onClickMenuItem(onClickData, tab) {
-    console.log('Menu item clicked', onClickData);
+    // console.log('Menu item clicked', onClickData);
 
     const { menuItemId } = onClickData;
 
@@ -46,7 +44,7 @@ export class Menus {
     console.warn('Unknown menu item!', onClickData);
   }
 
-  create() {
+  createDefault() {
     this.menus.create({
       id: 'refresh-all-boards',
       title: '♻️ Refresh all boards',
@@ -57,8 +55,6 @@ export class Menus {
       id: 'boards-separator',
       type: 'separator',
     });
-
-    this.bindEvents();
   }
 
   addBoard(board, lists) {
@@ -103,8 +99,6 @@ export class Menus {
   }
 
   removeAll() {
-    this.menus.onClicked.removeListener(this.onClickMenuItem);
-
     return new Promise((resolve) => { this.menus.removeAll(resolve); });
   }
 }

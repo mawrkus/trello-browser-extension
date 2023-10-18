@@ -5,131 +5,76 @@ import { Scripting } from './Scripting.js';
 import { Storage } from './Storage.js';
 import { TrelloHttpRepository } from './TrelloHttpRepository.js';
 
-const storage = new Storage();
 const notifier = new Notifier();
 const scripting = new Scripting();
 
-export const httpClient = new HttpClient({
-  baseUrl: 'https://api.trello.com',
-  cacheClient: storage,
+const trelloRepository = new TrelloHttpRepository({
+  httpClient: new HttpClient({
+    baseUrl: 'https://api.trello.com',
+    storage: new Storage(),
+  }),
 });
 
-const trelloRepository = new TrelloHttpRepository({ httpClient });
-
 const menus = new Menus({
-  onClickRefreshAllBoards: recreateAllMenus,
-  onClickRefreshBoardLists: recreateBoardMenu,
+  onClickRefreshAllBoards: createAllMenus,
+  onClickRefreshBoardLists: (board) => createBoardMenu(board, true),
   onClickList: addCardToList,
 });
 
-async function loadBoards(forceRefresh = false) {
-  let boards = null;
-
-  try {
-    boards = await trelloRepository.getBoards(forceRefresh);
-  } catch (error) {
-    notifier.error({
-      type: 'Load Error',
-      message: `Error loading boards: ${error.message}!`,
-    });
-  }
-
-  return boards;
-}
-
-async function loadBoardLists(board, forceRefresh = false) {
+async function createBoardMenu(board, refresh = false) {
   let lists = null;
 
   try {
-    lists = await trelloRepository.getBoardLists(board, forceRefresh);
+    lists = await trelloRepository.getBoardLists(board);
   } catch (error) {
     notifier.error({
       type: 'Load Error',
       message: `Error loading "${board.name}" lists: ${error.message}`,
     });
+
+    return;
   }
 
-  return lists;
+  if (refresh) {
+    await menus.removeBoard(board.id);
+
+    menus.addBoard(board, lists);
+
+    notifier.success({
+      message: `"${board.name}" → ${lists.length} lists successfully loaded!`,
+    });
+
+    return;
+  }
+
+  menus.addBoard(board, lists);
 }
 
 async function createAllMenus() {
-  console.log('Creating menus...');
+  let boards = null;
 
-  const boards = await loadBoards();
+  try {
+    boards = await trelloRepository.getBoards();
+  } catch (error) {
+    notifier.error({
+      type: 'Load Error',
+      message: `Error loading boards: ${error.message}!`,
+    });
 
-  if (!boards) {
     return;
   }
 
   await menus.removeAll();
 
-  menus.create();
+  menus.createDefault();
 
   for (const board of boards) {
     await createBoardMenu(board);
   }
 
-  await storage.set('hasMenus', true).catch((error) => {
-    console.error('Error while storing the "hasMenus" flag!');
-    console.error(error);
-  });
-}
-
-async function createBoardMenu(board, forceRefresh = false) {
-  const lists = await loadBoardLists(board, forceRefresh);
-
-  if (!lists) {
-    return;
-  }
-
-  menus.addBoard(board, lists);
-}
-
-async function recreateAllMenus() {
-  console.log('Recreating menus...');
-
-  const boards = await loadBoards(true);
-
-  if (!boards) {
-    return;
-  }
-
-  await menus.removeAll();
-
-  menus.create();
-
-  for (const board of boards) {
-    await createBoardMenu(board, true);
-  }
-
   notifier.success({
     message: `${boards.length} boards successfully loaded!`,
   });
-
-  await storage.set('hasMenus', true).catch((error) => {
-    console.error('Error while storing the "hasMenus" flag!');
-    console.error(error);
-  });
-}
-
-async function recreateBoardMenu(board) {
-  const lists = await loadBoardLists(board, true);
-
-  if (!lists) {
-    return;
-  }
-
-  await menus.removeBoard(board.id);
-
-  menus.addBoard(board, lists);
-
-  notifier.success({
-    message: `"${board.name}" → ${lists.length} lists successfully loaded!`,
-  });
-}
-
-async function createMinimalMenu() {
-  await menus.create();
 }
 
 async function buildCardAndCoverData(onClickData, tab, list) {
@@ -183,30 +128,5 @@ async function addCardToList(onClickData, tab, board, list) {
 chrome.runtime.onInstalled.addListener(async () => {
   console.log('Extension installed.');
 
-  await createMinimalMenu();
+  await menus.createDefault();
 });
-
-async function init() {
-  console.log('Initializing background script...');
-
-  const credentials = await storage.get('credentials');
-
-  if (!credentials) {
-    console.warn('No credentials!');
-    return;
-  }
-
-  const hasMenus = await storage.get('hasMenus').catch((error) => {
-    console.error('Error while getting the "hasMenus" flag from storage!');
-    console.error(error);
-    return false;
-  });
-
-  if (!hasMenus) {
-    await recreateAllMenus();
-  } else {
-    await createAllMenus();
-  }
-}
-
-init().then(() => console.log('Background script initialized.'));
