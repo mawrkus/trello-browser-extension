@@ -1,6 +1,12 @@
-# A browser extension for [Trello](https://trello.com/)
+<p align="center">
+    <img src="./icons/trello-logo-96.png">
+</p>
 
+<h1 align="center">A browser extension for <a href="https://trello.com/">Trello</a></h1>
+
+<div align="center">
 A browser extension to easily create Trello cards from any Web page in two clicks. Including metadata (title, description) and a cover image.
+</div>
 
 ## Installation
 
