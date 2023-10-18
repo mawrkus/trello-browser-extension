@@ -91,22 +91,27 @@ async function buildCardAndCoverData(onClickData, tab, list) {
     ? `${htmlMetas.description} (...)`
     : 'No description available.';
 
-  return {
-    card: {
-      idList: list.id,
-      urlSource: pageUrl,
-      name: selectionText || pageTitle,
-      desc: `${desc}\n\n🔗 Source: ${pageUrl}`,
-      pos: 'top',
-    },
-    cover: htmlMetas.imageUrl
-      ? {
-        name: 'Cover',
-        url: htmlMetas.imageUrl,
-        setCover: true,
-      }
-      : null,
+  const card = {
+    idList: list.id,
+    urlSource: pageUrl,
+    name: selectionText || pageTitle,
+    desc: `${desc}\n\n🔗 Source: ${pageUrl}`,
+    pos: 'top',
   };
+
+  let cover = null;
+
+  if (htmlMetas.imageUrl) {
+    cover = {
+      name: 'Cover',
+      url: (/^https?:\/\//.test(htmlMetas.imageUrl))
+        ? htmlMetas.imageUrl
+        : new URL(htmlMetas.imageUrl, new URL(pageUrl).origin).toString(),
+      setCover: true,
+    };
+  }
+
+  return { card, cover };
 }
 
 async function addCardToList(onClickData, tab, board, list) {
